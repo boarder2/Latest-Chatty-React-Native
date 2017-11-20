@@ -7,6 +7,7 @@ import LoginScreen from "./src/settings/LoginScreen";
 import BrowserView from "./src/BrowserView";
 import NewRootPostView from "./src/postViews/NewRootPostView";
 import StyleConverters from "./src/styles/StyleConverters";
+import HelpView from "./src/HelpView";
 
 const Chatty = StackNavigator(
 	{
@@ -28,7 +29,8 @@ const Settings = StackNavigator({
 const App = DrawerNavigator(
 	{
 		Chatty: { screen: Chatty },
-		Settings: { screen: Settings }
+		Settings: { screen: Settings },
+		Help: { screen: StackNavigator({ Help: { screen: HelpView } }) }
 	},
 	{
 		initialRouteName: "Chatty",

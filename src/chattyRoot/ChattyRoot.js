@@ -14,11 +14,7 @@ export default class ChattyRoot extends React.Component {
 		title: "Chatty",
 		headerTintColor: GlobalStyles.navigationHeaderTintColor,
 		headerStyle: GlobalStyles.navigationHeaderStyle,
-		headerLeft: (
-			<TouchableOpacity onPress={() => navigation.navigate("DrawerOpen")}>
-				<Icon name="menu" size={30} style={{ color: "white", paddingLeft: 10 }} />
-			</TouchableOpacity>
-		),
+		headerLeft: GlobalStyles.getHamburgerButton(navigation),
 		headerRight: (
 			<TouchableOpacity onPress={() => navigation.navigate("NewThread")}>
 				<Icon name="plus" size={30} style={{ color: "white", paddingRight: 10 }} />
@@ -42,6 +38,7 @@ export default class ChattyRoot extends React.Component {
 	}
 
 	componentWillUnmount() {
+		chattyStore.stopChattyRefresh();
 		AppState.removeEventListener("change", this._handleAppStateChange);
 	}
 
@@ -59,7 +56,7 @@ export default class ChattyRoot extends React.Component {
 				<FlatList
 					data={this.state.store.filteredChatty.values()}
 					refreshing={this.state.store.refreshing}
-					onRefresh={() => this._sortChatty()}
+					onRefresh={() => chattyStore.refreshChatty()}
 					renderItem={this._renderThread}
 					keyExtractor={(item) => item.id}
 					ref={(ref) => this.listRef = ref}
@@ -83,16 +80,6 @@ export default class ChattyRoot extends React.Component {
 
 	_scrollToTop() {
 		this.listRef.scrollToIndex({ index: 0 });
-	}
-
-	_sortChatty() {
-		this.setState({ refreshing: true }, () => {
-			chattyStore.refreshChatty();
-			//chattyStore.setSortOrder("replyCount");
-			this.setState({
-				refreshing: false
-			});
-		});
 	}
 
 	_renderThread = ({ item }) => {

@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, View, StyleSheet, StatusBar, TouchableOpacity, Text } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Button, View, StyleSheet, StatusBar, Text } from "react-native";
 import loginStore from "../data/LoginStore";
 import GlobalStyles from "../styles/GlobalStyles";
 
@@ -9,11 +8,7 @@ export default class SettingsScreen extends React.Component {
 		title: "Settings",
 		headerTintColor: GlobalStyles.navigationHeaderTintColor,
 		headerStyle: GlobalStyles.navigationHeaderStyle,
-		headerLeft: (
-			<TouchableOpacity onPress={() => navigation.navigate("DrawerOpen")}>
-				<Icon name="menu" size={30} style={{ color: "white", paddingLeft: 10 }} />
-			</TouchableOpacity>
-		)
+		headerLeft: GlobalStyles.getHamburgerButton(navigation)
 	});
 
 	constructor(props) {

@@ -157,6 +157,7 @@ export class ChattyStore {
 			// No luck looking for something different in after 2 minutes and it's not worth spending more time.
 			// let start = new Date();
 			this.refreshing = true;
+			this.clearRootPosts();
 			await WinchattyAPI._getTenYearUsers();
 			await seenPosts.refreshSeenPosts();
 			this._lastEventId = await WinchattyAPI._getNewestEventId();
@@ -166,7 +167,6 @@ export class ChattyStore {
 			const chattyJson = await WinchattyAPI.getChatty();
 			// end = new Date();
 			// console.log("Getting chatty took " + (end.getTime() - start.getTime()).toString() + " ms");
-			this.clearRootPosts();
 			// start = new Date();
 			const rootPosts = [];
 			const username = await loginStore.getUser();
