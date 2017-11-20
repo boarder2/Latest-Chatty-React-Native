@@ -27,6 +27,7 @@ export default class HelpView extends React.Component {
 				<Text style={styles.subHeader}>11/20/2017</Text>
 				<Text style={styles.text}>
 					• Added help section{"\n"}
+					• Better support for application getting backgrounded{"\n"}
 				</Text>
 				<Text style={[styles.blended, { fontSize: 8 }]}>
 					This application is not supported by, endorsed by, or affiliated with shacknews.com

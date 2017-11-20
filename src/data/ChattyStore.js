@@ -16,11 +16,15 @@ export class ChattyStore {
 
 	startChatyRefresh() {
 		if (this.refreshing) return;
-		this.refreshing = true;
 		this._clearTimer();
-		this.refreshTimer = setTimeout(() => {
-			this._getWholeChatty();
-		}, 1);
+		if (this.unfilteredChatty.size > 0) {
+			this._waitForNextEvent();
+		} else {
+			this.refreshing = true;
+			this.refreshTimer = setTimeout(() => {
+				this._getWholeChatty();
+			}, 1);
+		}
 	}
 
 	stopChattyRefresh() {
