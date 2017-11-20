@@ -245,7 +245,7 @@ export class ChattyStore {
 	}
 
 	_clearTimer() {
-		if (_.isUndefined(this._refreshTimer)) {
+		if (!_.isUndefined(this._refreshTimer)) {
 			clearTimeout(this._refreshTimer);
 			this._refreshTimer = undefined;
 		}
