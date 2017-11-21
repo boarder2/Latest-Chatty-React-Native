@@ -24,6 +24,10 @@ export default class HelpView extends React.Component {
 					Special thanks to electroly for the API
 				</Text>
 				<Text style={styles.header}>Change History</Text>
+				<Text style={styles.subHeader}>11/21/2017</Text>
+				<Text style={styles.text}>
+					• Added thread depth indicators{"\n"}
+				</Text>
 				<Text style={styles.subHeader}>11/20/2017</Text>
 				<Text style={styles.text}>
 					• Added help section{"\n"}

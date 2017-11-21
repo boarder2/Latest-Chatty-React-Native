@@ -299,7 +299,7 @@ export class ChattyStore {
 		this._recursiveSetDepth(rootPost, threadPosts, 1);
 		const sortedPosts = [];
 		this._recursiveAddComments(rootPost, sortedPosts, threadPosts);
-		return _.chain(sortedPosts)
+		const posts = _.chain(sortedPosts)
 			.reverse()
 			.each((p) => {
 				this._generatePreview(p);
@@ -313,6 +313,48 @@ export class ChattyStore {
 				p.body = p.body.replace(/<br \/>/g, "\n");
 			})
 			.value();
+		this._calculateDepthIndicators(posts);
+		return posts;
+	}
+
+	_calculateDepthIndicators(posts) {
+		var orderedById = _.sortBy(posts, ["id"]);
+		for (const c of orderedById) {
+			var indicators = [c.depth];
+			for (var depth = 0; depth < c.depth; depth++) {
+				//Figure out if we're the last at our depth.
+				if (depth == c.depth - 1) {
+					indicators[depth] = this._isLastCommentAtDepth(posts, c) ? "└" : "├";
+				}
+				else {
+					var parentForDepth = this._findParentAtDepth(posts, c, depth + 1);
+					if (!this._isLastCommentAtDepth(posts, parentForDepth)) {
+						indicators[depth] = "│";
+					}
+					else {
+						indicators[depth] = " ";
+					}
+				}
+			}
+			if (c.depth > 0) {
+				c.depthText = indicators.join("");
+			} else {
+				c.depthText = "";
+			}
+		}
+	}
+
+	_findParentAtDepth(posts, c, depth) {
+		var parent = _.find(posts, c1 => c1.id === c.parentId);
+		if (parent.depth == depth) {
+			return parent;
+		}
+		return this._findParentAtDepth(posts, parent, depth);
+	}
+
+	_isLastCommentAtDepth(posts, c) {
+		var threadsAtDepth = _.orderBy(_.filter(posts, c1 => c1.parentId == c.parentId), ["id"]);
+		return _.last(threadsAtDepth).id === c.id;
 	}
 
 	_generatePreview(post) {

@@ -19,10 +19,6 @@ export default class RenderedPost extends React.Component {
 		};
 	}
 
-	_getDynamicPaddingStyle = (depth) => {
-		return { marginLeft: 6 + (15 * depth) };
-	};
-
 	_copyPostUrlToClipboard() {
 		Clipboard.setString("https://www.shacknews.com/chatty?id=" + this.state.item.id + "#item_" + this.state.item.id);
 		Alert.alert(
@@ -61,11 +57,12 @@ export default class RenderedPost extends React.Component {
 					style={{
 						flex: 1,
 						flexDirection: "row",
-						padding: 6,
+						paddingLeft: 6,
+						paddingRight: 6,
 						alignItems: "center"
 					}}
 					onPress={async () => await this.props.selectPost(this.state.item.id)}>
-					<View style={[this._getDynamicPaddingStyle(this.state.item.depth), { flex: 0 }]} />
+					<Text style={{ flex: 0, fontSize: 24, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "Courier" }}>{this.state.item.depthText}</Text>
 					<Text numberOfLines={1}
 						style={{
 							flex: 1,
@@ -109,13 +106,13 @@ export default class RenderedPost extends React.Component {
 					</View>);
 			}
 			messageBody = (
-				<View style={{ padding: 6 }}>
+				<View style={{ paddingLeft: 6, paddingRight: 6 }}>
 					<View style={{
 						flex: 1,
 						flexDirection: "row",
 						justifyContent: "space-between"
 					}}>
-						<View style={[this._getDynamicPaddingStyle(this.state.item.depth), { flex: 0 }]} />
+						<Text style={{ flex: 0, fontSize: 24, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "Courier" }}>{this.state.item.depthText}</Text>
 						<Text numberOfLines={1}
 							style={[StyleConverters.getAuthorTextStyle(this.state.item.author), { flex: 0 }]}>{this.state.item.author}</Text>
 						{tenYearIcon}
