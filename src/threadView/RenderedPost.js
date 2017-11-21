@@ -110,7 +110,8 @@ export default class RenderedPost extends React.Component {
 					<View style={{
 						flex: 1,
 						flexDirection: "row",
-						justifyContent: "space-between"
+						justifyContent: "space-between",
+						alignItems: "center"
 					}}>
 						<Text style={{ flex: 0, fontSize: 24, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "Courier" }}>{this.state.item.depthText}</Text>
 						<Text numberOfLines={1}
