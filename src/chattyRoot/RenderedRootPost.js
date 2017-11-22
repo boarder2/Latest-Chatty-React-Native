@@ -48,7 +48,7 @@ export default class RenderedRootPost extends React.Component {
 					justifyContent: "space-between"
 				}}>
 					<View style={{ flex: 1, flexDirection: "row" }}>
-						<Text style={StyleConverters.getAuthorTextStyle(this.state.item.author)}>{this.state.item.author}</Text>
+						<Text style={StyleConverters.getAuthorTextStyle(this.state.item.authorType)}>{this.state.item.author}</Text>
 						{tenYearIcon}
 					</View>
 					<Text style={styles.dateText}>{moment(this.state.item.date).fromNow()}</Text>

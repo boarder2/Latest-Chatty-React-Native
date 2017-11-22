@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import AuthorTypes from "../data/AuthorTypes";
 
 export default class StyleConverters {
 	static tagStylesheet = StyleSheet.create({
@@ -68,16 +69,20 @@ export default class StyleConverters {
 		return "#ff2d17";
 	}
 
-	static getAuthorTextStyle(authorName) {
-		return { color: StyleConverters.getAuthorColor(authorName) };
+	static getAuthorTextStyle(authorType) {
+		return { color: StyleConverters.getAuthorColor(authorType) };
 	}
 
-	static getAuthorColor(authorName) {
-		switch (authorName.toLowerCase()) {
-			case "boarder2":
+	static getAuthorColor(authorType) {
+		switch (authorType) {
+			case AuthorTypes.Boarder2:
 				return "#ff5000";
-			case "shacknews":
+			case AuthorTypes.Self:
+				return "rgb(102, 204, 255)";
+			case AuthorTypes.Shacknews:
 				return "rgb(147, 112, 219)";
+			case AuthorTypes.ThreadOP:
+				return "rgb(106, 255, 148)";
 			default:
 				return "rgb(255, 186, 0)";
 		}

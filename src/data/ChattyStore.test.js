@@ -1,4 +1,5 @@
 import chattyStore from "./ChattyStore";
+import AuthorTypes from "./AuthorTypes";
 
 describe("blah", () => {
 	let posts;
@@ -188,7 +189,33 @@ describe("blah", () => {
 	});
 
 	it("does some stuff", () => {
-		const sorted = chattyStore._parseThread(posts, true);
+		const sorted = chattyStore._parseThread(posts, "", true);
 		expect(sorted).toEqual([posts[17], posts[16], posts[15], posts[5], posts[14], posts[13], posts[12], posts[10], posts[9], posts[8], posts[7], posts[4], posts[3], posts[11], posts[6], posts[2], posts[1], posts[0]]);
 	});
 });
+
+describe("author types", () => {
+	it("should return boarder2", () => {
+		expect(chattyStore._getAuthorType("boarder2", "", "")).toBe(AuthorTypes.Boarder2);
+	});
+	
+	it("should return shacknews", () => {
+		expect(chattyStore._getAuthorType("shacknews", "", "")).toBe(AuthorTypes.Shacknews);
+	});
+	
+	it("should return threadop", () => {
+		expect(chattyStore._getAuthorType("asdf", "", "asdf")).toBe(AuthorTypes.ThreadOP);
+	});
+	
+	it("should return self", () => {
+		expect(chattyStore._getAuthorType("asdf", "asdf", "")).toBe(AuthorTypes.Self);
+	});
+	
+	it("should return default", () => {
+		expect(chattyStore._getAuthorType("asdf", "111", "1111")).toBe(AuthorTypes.Default);
+	});
+
+	it("should be case insensitive", () => {
+		expect(chattyStore._getAuthorType("BOARDER2", "", "")).toBe(AuthorTypes.Boarder2);
+	});
+})

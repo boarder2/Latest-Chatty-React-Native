@@ -70,7 +70,7 @@ export default class RenderedPost extends React.Component {
 							color: this.state.item.isRead ? "gray" : "lightgray"
 						}}>{this.state.item.preview}</Text>
 					<Text numberOfLines={1}
-						style={[StyleConverters.getAuthorTextStyle(this.state.item.author), { flex: 0 }]}>{this.state.item.author}</Text>
+						style={[StyleConverters.getAuthorTextStyle(this.state.item.authorType), { flex: 0 }]}>{this.state.item.author}</Text>
 					{tenYearIcon}
 					<View style={{ flex: 0, flexDirection: "row" }}>{lolTags}</View>
 				</TouchableOpacity>);
@@ -116,7 +116,7 @@ export default class RenderedPost extends React.Component {
 					}}>
 						<Text style={{ flex: 0, fontSize: 24, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "Courier" }}>{this.state.item.depthText}</Text>
 						<Text numberOfLines={1}
-							style={[StyleConverters.getAuthorTextStyle(this.state.item.author), { flex: 0 }]}>{this.state.item.author}</Text>
+							style={[StyleConverters.getAuthorTextStyle(this.state.item.authorType), { flex: 0 }]}>{this.state.item.author}</Text>
 						{tenYearIcon}
 						<Text
 							style={[styles.dateText, { flex: 0 }]}>{moment(this.state.item.date).format("MMM Do, YYYY h:MM A")}</Text>

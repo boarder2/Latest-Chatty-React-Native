@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import loginStore from "../data/LoginStore";
 import seenPosts from "./SeenPosts";
 import WinchattyAPI from "../api/WinchattyAPI";
+import AuthorTypes from "./AuthorTypes";
 
 export class ChattyStore {
 	@observable unfilteredChatty = observable.map();
@@ -296,6 +297,7 @@ export class ChattyStore {
 		const rootPost = _.find(threadPosts, (p) => {
 			return p.parentId === 0;
 		});
+		const threadOP = rootPost.author;
 		rootPost.depth = 0;
 		this._recursiveSetDepth(rootPost, threadPosts, 1);
 		const sortedPosts = [];
@@ -312,10 +314,27 @@ export class ChattyStore {
 				}
 				p.isRead = seenPosts.isPostRead(p.id);
 				p.body = p.body.replace(/<br \/>/g, "\n");
+				p.authorType = this._getAuthorType(p.author, username, p.id === rootPost.id ? "" : threadOP);
 			})
 			.value();
+
 		this._calculateDepthIndicators(posts);
 		return posts;
+	}
+
+	_getAuthorType(username, currentUser, opAuthor) {
+		switch (username.toLowerCase()) {
+			case "boarder2":
+				return AuthorTypes.Boarder2;
+			case "shacknews":
+				return AuthorTypes.Shacknews;
+			case currentUser.toLowerCase():
+				return AuthorTypes.Self;
+			case opAuthor.toLowerCase():
+				return AuthorTypes.ThreadOP;
+			default:
+				return AuthorTypes.Default;
+		}
 	}
 
 	_calculateDepthIndicators(posts) {
