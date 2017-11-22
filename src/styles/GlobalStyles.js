@@ -1,7 +1,7 @@
-import React from "react";
-import Expo from "expo";
 import { Platform, TouchableOpacity } from "react-native";
+import Expo from "expo";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import React from "react";
 
 export default class GlobalStyles {
 	static navigationHeaderStyle = {

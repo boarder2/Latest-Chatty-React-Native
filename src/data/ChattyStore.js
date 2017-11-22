@@ -1,7 +1,8 @@
 import { action, observable } from "mobx";
-import seenPosts from "./SeenPosts";
 import * as _ from "lodash";
+
 import loginStore from "../data/LoginStore";
+import seenPosts from "./SeenPosts";
 import WinchattyAPI from "../api/WinchattyAPI";
 
 export class ChattyStore {

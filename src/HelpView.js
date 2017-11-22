@@ -1,5 +1,6 @@
-import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React from "react";
+
 import GlobalStyles from "./styles/GlobalStyles";
 import StyleConverters from "./styles/StyleConverters";
 

@@ -1,8 +1,9 @@
-import React from "react";
-import * as PropTypes from "prop-types";
-import RichPostRenderer from "./RichPostRenderer";
-import { Text } from "react-native";
 import { observer } from "mobx-react/native";
+import { Text } from "react-native";
+import * as PropTypes from "prop-types";
+import React from "react";
+
+import RichPostRenderer from "./RichPostRenderer";
 
 @observer
 export default class RichPostView extends React.Component {

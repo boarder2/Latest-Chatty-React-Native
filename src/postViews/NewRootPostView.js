@@ -1,9 +1,10 @@
-import React from "react";
-import { StyleSheet, View, Dimensions } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import WritePost from "./WritePost";
+import { StyleSheet, View, Dimensions } from "react-native";
+import React from "react";
+
 import GlobalStyles from "../styles/GlobalStyles";
 import WinchattyAPI from "../api/WinchattyAPI";
+import WritePost from "./WritePost";
 
 export default class NewRootPostView extends React.Component {
 	static navigationOptions = () => ({

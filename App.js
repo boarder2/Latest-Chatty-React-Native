@@ -1,13 +1,14 @@
-import React from "react";
 import { DrawerNavigator, StackNavigator } from "react-navigation";
-import ThreadList from "./src/threadView/ThreadList";
-import ChattyRoot from "./src/chattyRoot/ChattyRoot";
-import SettingsScreen from "./src/settings/SettingsScreen";
-import LoginScreen from "./src/settings/LoginScreen";
+import React from "react";
+
 import BrowserView from "./src/BrowserView";
-import NewRootPostView from "./src/postViews/NewRootPostView";
-import StyleConverters from "./src/styles/StyleConverters";
+import ChattyRoot from "./src/chattyRoot/ChattyRoot";
 import HelpView from "./src/HelpView";
+import LoginScreen from "./src/settings/LoginScreen";
+import NewRootPostView from "./src/postViews/NewRootPostView";
+import SettingsScreen from "./src/settings/SettingsScreen";
+import StyleConverters from "./src/styles/StyleConverters";
+import ThreadList from "./src/threadView/ThreadList";
 
 const Chatty = StackNavigator(
 	{

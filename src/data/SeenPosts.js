@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+
 import loginStore from "../data/LoginStore";
 
 class SeenPosts {

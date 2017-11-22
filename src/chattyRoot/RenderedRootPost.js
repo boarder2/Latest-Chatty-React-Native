@@ -1,11 +1,12 @@
-import React from "react";
+import { observer } from "mobx-react/native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import PropTypes from "prop-types";
-import StyleConverters from "../styles/StyleConverters";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
+import PropTypes from "prop-types";
+import React from "react";
+
+import StyleConverters from "../styles/StyleConverters";
 import WinchattyAPI from "../api/WinchattyAPI";
-import { observer } from "mobx-react/native";
 
 @observer
 export default class RenderedRootPost extends React.Component {

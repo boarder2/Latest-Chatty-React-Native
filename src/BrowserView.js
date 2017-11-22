@@ -1,5 +1,6 @@
-import React, { Component } from "react";
 import { WebView, Linking, Button } from "react-native";
+import React, { Component } from "react";
+
 import GlobalStyles from "./styles/GlobalStyles";
 
 export default class BrowserView extends Component {

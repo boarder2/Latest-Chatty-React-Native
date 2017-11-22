@@ -1,12 +1,13 @@
-import React from "react";
-import { StyleSheet, View, TouchableOpacity, Modal, Button } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import { observer } from "mobx-react/native";
-import RenderedPost from "./RenderedPost";
+import { StyleSheet, View, TouchableOpacity, Modal, Button } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import TagAPI from "../api/TagAPI";
+import React from "react";
+
 import chattyStore from "../data/ChattyStore";
 import GlobalStyles from "../styles/GlobalStyles";
+import RenderedPost from "./RenderedPost";
+import TagAPI from "../api/TagAPI";
 
 @observer
 export default class ThreadList extends React.Component {

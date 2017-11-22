@@ -1,7 +1,8 @@
-import React from "react";
 import { Button, TextInput, View, StyleSheet, StatusBar, Text } from "react-native";
-import loginStore from "../data/LoginStore";
+import React from "react";
+
 import GlobalStyles from "../styles/GlobalStyles";
+import loginStore from "../data/LoginStore";
 
 export default class LoginScreen extends React.Component {
 	static navigationOptions = () => ({

@@ -1,6 +1,7 @@
-import React from "react";
 import { View, TextInput, ActivityIndicator, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import React from "react";
+
 import StyleConverters from "../styles/StyleConverters";
 
 export default class WritePost extends React.Component {

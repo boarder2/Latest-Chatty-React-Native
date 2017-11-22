@@ -1,13 +1,14 @@
-import { StyleSheet, Text, TouchableOpacity, View, Clipboard, Alert } from "react-native";
-import * as React from "react";
-import StyleConverters from "../styles/StyleConverters";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import * as _ from "lodash";
-import WritePost from "../postViews/WritePost";
-import WinchattyAPI from "../api/WinchattyAPI";
-import moment from "moment";
-import RichPostView from "../postViews/RichPostView";
 import { observer } from "mobx-react/native";
+import { StyleSheet, Text, TouchableOpacity, View, Clipboard, Alert } from "react-native";
+import * as _ from "lodash";
+import * as React from "react";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import moment from "moment";
+
+import RichPostView from "../postViews/RichPostView";
+import StyleConverters from "../styles/StyleConverters";
+import WinchattyAPI from "../api/WinchattyAPI";
+import WritePost from "../postViews/WritePost";
 
 @observer
 export default class RenderedPost extends React.Component {

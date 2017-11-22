@@ -1,7 +1,8 @@
-import React from "react";
 import { Button, View, StyleSheet, StatusBar, Text } from "react-native";
-import loginStore from "../data/LoginStore";
+import React from "react";
+
 import GlobalStyles from "../styles/GlobalStyles";
+import loginStore from "../data/LoginStore";
 
 export default class SettingsScreen extends React.Component {
 	static navigationOptions = ({ navigation }) => ({

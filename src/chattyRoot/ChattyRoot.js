@@ -1,12 +1,13 @@
-import React from "react";
-import { StyleSheet, FlatList, View, TouchableOpacity, AppState, StatusBar, Text } from "react-native";
-import RenderedRootPost from "./RenderedRootPost";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { observer } from "mobx-react/native";
+import { StyleSheet, FlatList, View, TouchableOpacity, AppState, StatusBar, Text } from "react-native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import React from "react";
+
 import chattyStore from "../data/ChattyStore";
-import StyleConverters from "../styles/StyleConverters";
-import GlobalStyles from "../styles/GlobalStyles";
 import FadeInView from "../animation/FadeInView";
+import GlobalStyles from "../styles/GlobalStyles";
+import RenderedRootPost from "./RenderedRootPost";
+import StyleConverters from "../styles/StyleConverters";
 
 @observer
 export default class ChattyRoot extends React.Component {

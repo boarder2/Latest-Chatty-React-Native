@@ -1,6 +1,7 @@
-import RichPostRenderer from "./RichPostRenderer";
 import { Text } from "react-native";
 import React from "react";
+
+import RichPostRenderer from "./RichPostRenderer";
 
 //TODO: Get these in the right format.
 describe("RichPostRenderer Tests", () => {
