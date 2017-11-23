@@ -150,7 +150,15 @@ export class ChattyStore {
 		this.filteredChatty.clear();
 		this.newThreadCount = 0;
 		const sortedChatty = this._getSortedChatty();
-		_.each(sortedChatty, (p) => this.filteredChatty.set(p.id.toString(), p));
+		_.each(sortedChatty, (p) => {
+			if (p.isNewThread) {
+				p.wasNewThread = true;
+			} else {
+				p.wasNewThread = false;
+			}
+			p.isNewThread = false;
+			this.filteredChatty.set(p.id.toString(), p);
+		});
 	}
 
 	@action setSortOrder(value) {
@@ -177,7 +185,7 @@ export class ChattyStore {
 			const rootPosts = [];
 			const username = await loginStore.getUser();
 			for (const thread of chattyJson.threads) {
-				const newThread = await this._createRootThread(thread.posts, username);
+				const newThread = await this._createRootThread(thread.posts, username, false);
 				rootPosts.push(newThread);
 			}
 			// end = new Date();
@@ -227,9 +235,12 @@ export class ChattyStore {
 			case "hasReplies":
 				return this.unfilteredChatty.values().sort((a, b) => {
 					if (a.unreadReplies === b.unreadReplies) {
-						const aMaxPostId = _.max(a.posts.map(p => p.id));
-						const bMaxPostId = _.max(b.posts.map(p => p.id));
-						return this._sortSingle(aMaxPostId, bMaxPostId);
+						if (a.isNewThread === b.isNewThread) {
+							const aMaxPostId = _.max(a.posts.map(p => p.id));
+							const bMaxPostId = _.max(b.posts.map(p => p.id));
+							return this._sortSingle(aMaxPostId, bMaxPostId);
+						}
+						return a.isNewThread ? -1 : 1;
 					}
 					return a.unreadReplies ? -1 : 1;
 				});
@@ -262,7 +273,7 @@ export class ChattyStore {
 	async _processNewPost(post) {
 		const username = await loginStore.getUser();
 		if (post.parentId === 0) {
-			const newThread = this._createRootThread([post], username);
+			const newThread = this._createRootThread([post], username, true);
 			this.addRootPost(newThread);
 			this.newThreadCount++;
 		} else {
@@ -277,13 +288,14 @@ export class ChattyStore {
 		}
 	}
 
-	_createRootThread(threadPosts, username) {
+	_createRootThread(threadPosts, username, isNewThread) {
 		if (!_.isEmpty(username)) { username = username.toLowerCase(); }
 		const parsedThreadPosts = this._parseThread(threadPosts, username, true);
 		seenPosts.markPostRead(parsedThreadPosts[0].id); //Root post will never be unread.
 		parsedThreadPosts[0].isRead = true;
 		let rootPost = Object.assign({}, parsedThreadPosts[0]);
 		rootPost.postCount = parsedThreadPosts.length;
+		rootPost.isNewThread = isNewThread;
 		rootPost.hasUnreadPosts = _.some(parsedThreadPosts, p => !seenPosts.isPostRead(p.id));
 		rootPost.participated = !_.isEmpty(username) && _.some(parsedThreadPosts, p => p.author.toLowerCase() === username);
 		rootPost.unreadReplies = !_.isEmpty(username) && this._threadContainsUnreadReplies(username, parsedThreadPosts);

@@ -26,7 +26,7 @@ export default class RenderedRootPost extends React.Component {
 		} else {
 			participatedIcon = <Icon name="account" size={16} color={StyleConverters.getAccentColor()} />;
 		}
-		if(!this.state.item.unreadReplies) {
+		if (!this.state.item.unreadReplies) {
 			unreadRepliesIcon = <Icon name="comment-outline" size={16} color="#333" />;
 		} else {
 			unreadRepliesIcon = <Icon name="comment" size={16} color={StyleConverters.getAccentColor()} />;
@@ -51,7 +51,10 @@ export default class RenderedRootPost extends React.Component {
 						<Text style={StyleConverters.getAuthorTextStyle(this.state.item.authorType)}>{this.state.item.author}</Text>
 						{tenYearIcon}
 					</View>
-					<Text style={styles.dateText}>{moment(this.state.item.date).fromNow()}</Text>
+					<View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end"}}>
+						{this.state.item.wasNewThread ? <Icon name="star" fontSize="14" color={StyleConverters.getAccentColor()} /> : undefined}
+						<Text style={styles.dateText}>{moment(this.state.item.date).fromNow()}</Text>
+					</View>
 				</View>
 				<View style={{
 					flex: 1,
