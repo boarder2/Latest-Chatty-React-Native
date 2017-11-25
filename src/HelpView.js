@@ -29,6 +29,8 @@ export default class HelpView extends React.Component {
 				<Text style={styles.text}>
 					• Retrieve the names of users who tagged a post by tapping the tag count{"\n"}
 					• Added tag indicators to root posts{"\n"}
+					• Condensed root posts without new lines{"\n"}
+					• Added custom font for depth indicators for a more consistent experience{"\n"}
 				</Text>
 				<Text style={styles.subHeader}>11/23/2017</Text>
 				<Text style={styles.text}>
