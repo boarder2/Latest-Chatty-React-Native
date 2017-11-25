@@ -326,7 +326,7 @@ export class ChattyStore {
 					seenPosts.markPostRead(p.id);
 				}
 				p.isRead = seenPosts.isPostRead(p.id);
-				p.body = p.body.replace(/<br \/>/g, "\n");
+				p.body = p.body.replace(/\r?<br \/>/g, "\n");
 				p.authorType = this._getAuthorType(p.author, username, p.id === rootPost.id ? "" : threadOP);
 			})
 			.value();
@@ -391,7 +391,7 @@ export class ChattyStore {
 	}
 
 	_generatePreview(post) {
-		post.preview = post.body.replace(/<(?:.|\n)*?>/gm, "").substr(0, 300);
+		post.preview = post.body.replace(/\n/mg, " ").replace(/<(?:.|\n)*?>/gm, "").trim().substr(0, 300);
 	}
 
 	_recursiveAddComments(post, sortedPosts, threadPosts) {

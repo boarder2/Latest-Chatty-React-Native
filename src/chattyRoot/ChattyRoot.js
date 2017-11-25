@@ -1,5 +1,6 @@
 import { observer } from "mobx-react/native";
 import { StyleSheet, FlatList, View, TouchableOpacity, AppState, StatusBar, Text } from "react-native";
+import { Font } from "expo";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from "react";
 
@@ -31,6 +32,9 @@ export default class ChattyRoot extends React.Component {
 	}
 
 	componentWillMount() {
+		Font.loadAsync({
+			"source-code-pro-light": require("../../assets/fonts/SourceCodePro-Light.ttf")
+		});
 		chattyStore.startChatyRefresh();
 	}
 

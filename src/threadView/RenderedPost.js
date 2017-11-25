@@ -65,7 +65,7 @@ export default class RenderedPost extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={async () => await this.props.selectPost(this.state.item.id)}>
-					<Text style={{ flex: 0, fontSize: 24, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "Courier" }}>{this.state.item.depthText}</Text>
+					<Text style={{ flex: 0, fontSize: 22, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "source-code-pro-light" }}>{this.state.item.depthText}</Text>
 					<Text numberOfLines={1}
 						style={{
 							flex: 1,
@@ -112,7 +112,7 @@ export default class RenderedPost extends React.Component {
 						paddingTop: _.isEmpty(this.state.item.depthText) ? 6 : 0,
 						paddingBottom: _.isEmpty(this.state.item.depthText) ? 6 : 0,
 					}}>
-						<Text style={{ flex: 0, fontSize: 24, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "Courier" }}>{this.state.item.depthText}</Text>
+						<Text style={{ flex: 0, fontSize: 22, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "source-code-pro-light" }}>{this.state.item.depthText}</Text>
 						<Text numberOfLines={1}
 							style={[StyleConverters.getAuthorTextStyle(this.state.item.authorType), { flex: 0 }]}>{this.state.item.author}</Text>
 						{tenYearIcon}

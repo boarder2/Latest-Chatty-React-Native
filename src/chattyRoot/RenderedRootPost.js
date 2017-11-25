@@ -39,7 +39,7 @@ export default class RenderedRootPost extends React.Component {
 		const tagIndicators = [];
 		_.each(this.state.item.lols, (tag) => {
 			const size = Math.min(15, Math.max(5, tag.count * 2));
-			tagIndicators.push(<View key={tag.tag} style={{ height: size, width: size, backgroundColor: StyleConverters.getLolTagColor(tag.tag) }} />);
+			tagIndicators.push(<View key={tag.tag} style={{ height: size, width: size, marginRight:2, backgroundColor: StyleConverters.getLolTagColor(tag.tag) }} />);
 		});
 		return (
 			<TouchableOpacity
