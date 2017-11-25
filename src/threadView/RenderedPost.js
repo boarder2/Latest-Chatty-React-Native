@@ -5,6 +5,7 @@ import * as React from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 
+import LolTagView from "./LolTagView";
 import RichPostView from "../postViews/RichPostView";
 import StyleConverters from "../styles/StyleConverters";
 import WinchattyAPI from "../api/WinchattyAPI";
@@ -44,7 +45,6 @@ export default class RenderedPost extends React.Component {
 		}
 		if (!this.state.item.isSelected) {
 			let lolTags = [];
-			//TODO: PureComponent won"t update lol counts.
 			_.each(this.state.item.lols, (lol) => {
 				lolTags.push(<View style={{
 					width: 4,
@@ -75,12 +75,6 @@ export default class RenderedPost extends React.Component {
 					<View style={{ flex: 0, flexDirection: "row" }}>{lolTags}</View>
 				</TouchableOpacity>);
 		} else {
-			let lolTags = [];
-			_.each(this.state.item.lols, (lol) => {
-				const text = lol.count + " " + lol.tag + "s";
-				lolTags.push(<Text key={text}
-					style={[StyleConverters.getLolTagStyle(lol.tag), { paddingRight: 6 }]}>{text}</Text>);
-			});
 			let replyArea, selectedButtonStyle;
 			if (this.state.showReply) {
 				selectedButtonStyle = {
@@ -137,7 +131,7 @@ export default class RenderedPost extends React.Component {
 						flexDirection: "row",
 						justifyContent: "space-between"
 					}}>
-						<View style={{ flex: 1, flexDirection: "row", paddingTop: 4 }}>{lolTags}</View>
+						<LolTagView style={{ flex: 1, flexDirection: "row", paddingTop: 6 }} post={this.state.item} />
 						<View style={{ flex: 0, flexDirection: "row" }}>
 							<Icon name="account-outline" style={styles.inlineButton} />
 							<Icon name="link"

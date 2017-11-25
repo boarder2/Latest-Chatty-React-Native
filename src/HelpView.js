@@ -25,6 +25,10 @@ export default class HelpView extends React.Component {
 					Special thanks to electroly for the API
 				</Text>
 				<Text style={styles.header}>Change History</Text>
+				<Text style={styles.subHeader}>11/25/2017</Text>
+				<Text style={styles.text}>
+					• Retrieve the names of users who tagged a post by tapping the tag count{"\n"}
+				</Text>
 				<Text style={styles.subHeader}>11/23/2017</Text>
 				<Text style={styles.text}>
 					• Sort new posts to the top on refresh{"\n"}
