@@ -46,9 +46,13 @@ export default class TagAPI {
 	}
 
 	static async getTaggers(postId, tag) {
-		const response = await fetch(`${TagAPI.tagHostUrl}/api.php?special=get_taggers&thread_id=${postId}&tag=${tag}`);
-		const json = await response.json();
-		const sortedTaggers = _.sortBy(json[tag], a => a.toLowerCase());
-		return sortedTaggers;
+		try {
+			const response = await fetch(`${TagAPI.tagHostUrl}/api.php?special=get_taggers&thread_id=${postId}&tag=${tag}`);
+			const json = await response.json();
+			const sortedTaggers = _.sortBy(json[tag], a => a.toLowerCase());
+			return sortedTaggers;
+		} catch (e) {
+			return ["Error retrieving users."];
+		}
 	}
 }
