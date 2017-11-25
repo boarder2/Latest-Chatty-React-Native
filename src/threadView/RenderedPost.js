@@ -60,6 +60,8 @@ export default class RenderedPost extends React.Component {
 						flexDirection: "row",
 						paddingLeft: 6,
 						paddingRight: 6,
+						paddingTop: _.isEmpty(this.state.item.depthText) ? 6 : 0,
+						paddingBottom: _.isEmpty(this.state.item.depthText) ? 6 : 0,
 						alignItems: "center"
 					}}
 					onPress={async () => await this.props.selectPost(this.state.item.id)}>
@@ -106,7 +108,9 @@ export default class RenderedPost extends React.Component {
 						flex: 1,
 						flexDirection: "row",
 						justifyContent: "space-between",
-						alignItems: "center"
+						alignItems: "center",
+						paddingTop: _.isEmpty(this.state.item.depthText) ? 6 : 0,
+						paddingBottom: _.isEmpty(this.state.item.depthText) ? 6 : 0,
 					}}>
 						<Text style={{ flex: 0, fontSize: 24, paddingRight: 2, color: StyleConverters.getAccentColor(), fontFamily: "Courier" }}>{this.state.item.depthText}</Text>
 						<Text numberOfLines={1}
