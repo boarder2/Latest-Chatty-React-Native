@@ -289,7 +289,7 @@ export class ChattyStore {
 	}
 
 	_createRootThread(threadPosts, username, isNewThread) {
-		if (!_.isEmpty(username)) { username = username.toLowerCase(); }
+		if (!_.isEmpty(username)) { username = username.toLowerCase(); } else { username = ""; }
 		const parsedThreadPosts = this._parseThread(threadPosts, username, true);
 		seenPosts.markPostRead(parsedThreadPosts[0].id); //Root post will never be unread.
 		parsedThreadPosts[0].isRead = true;
@@ -305,6 +305,7 @@ export class ChattyStore {
 	}
 	//Prettu much copied this from LC UWP. There is a lot of looping in here that I"m sure could be optimized.
 	_parseThread(threadPosts, username, setRootSelected) {
+		if (!_.isEmpty(username)) { username = username.toLowerCase(); } else { username = ""; }
 		threadPosts = _.orderBy(threadPosts, ["id"], ["asc"]);
 		const rootPost = _.find(threadPosts, (p) => {
 			return p.parentId === 0;

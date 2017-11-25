@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 import PropTypes from "prop-types";
 import React from "react";
+import * as _ from "lodash";
 
 import StyleConverters from "../styles/StyleConverters";
 import WinchattyAPI from "../api/WinchattyAPI";
@@ -35,6 +36,11 @@ export default class RenderedRootPost extends React.Component {
 		if (WinchattyAPI.isTenYearUser(this.state.item.author)) {
 			tenYearIcon = <Icon name="flash" style={{ marginLeft: 2, marginTop: 2 }} size={12} color="rgb(255, 186, 0);" />;
 		}
+		const tagIndicators = [];
+		_.each(this.state.item.lols, (tag) => {
+			const size = Math.min(15, Math.max(5, tag.count * 2));
+			tagIndicators.push(<View key={tag.tag} style={{ height: size, width: size, backgroundColor: StyleConverters.getLolTagColor(tag.tag) }} />);
+		});
 		return (
 			<TouchableOpacity
 				style={{
@@ -51,7 +57,7 @@ export default class RenderedRootPost extends React.Component {
 						<Text style={StyleConverters.getAuthorTextStyle(this.state.item.authorType)}>{this.state.item.author}</Text>
 						{tenYearIcon}
 					</View>
-					<View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end"}}>
+					<View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end" }}>
 						{this.state.item.wasNewThread ? <Icon name="star" fontSize="14" color={StyleConverters.getAccentColor()} /> : undefined}
 						<Text style={styles.dateText}>{moment(this.state.item.date).fromNow()}</Text>
 					</View>
@@ -62,7 +68,7 @@ export default class RenderedRootPost extends React.Component {
 				}}>
 					<View style={[{
 						flex: 0,
-						height: 60,
+						height: 75,
 						width: 40,
 						alignItems: "center",
 						justifyContent: "center"
@@ -74,10 +80,13 @@ export default class RenderedRootPost extends React.Component {
 						paddingLeft: 6,
 						alignItems: "stretch"
 					}}>
-						<Text style={{ color: this.state.item.hasUnreadPosts ? "lightgray" : "gray" }} numberOfLines={3}>
+						<Text style={{ flex: 1, color: this.state.item.hasUnreadPosts ? "lightgray" : "gray" }} numberOfLines={3}>
 							{this.state.item.preview}
 							{/* <RichPostView text={this.state.item.preview}/> */}
 						</Text>
+						<View style={{ flex: 0, flexDirection: "row", alignItems:"flex-end" }}>
+							{tagIndicators}
+						</View>
 					</View>
 					<View style={{ flex: 0, flexDirection: "column", justifyContent: "space-between" }}>
 						{participatedIcon}

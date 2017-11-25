@@ -28,6 +28,7 @@ export default class HelpView extends React.Component {
 				<Text style={styles.subHeader}>11/25/2017</Text>
 				<Text style={styles.text}>
 					• Retrieve the names of users who tagged a post by tapping the tag count{"\n"}
+					• Added tag indicators to root posts{"\n"}
 				</Text>
 				<Text style={styles.subHeader}>11/23/2017</Text>
 				<Text style={styles.text}>
