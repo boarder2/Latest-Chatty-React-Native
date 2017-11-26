@@ -202,15 +202,17 @@ export class ChattyStore {
 				await this._waitForNextEvent();
 			}, 10000);
 		} catch (error) {
-			console.error(error);
+			debugStore.addError(error);
 		}
 	}
 
 	@action async _waitForNextEvent() {
+		let json;
 		try {
 			// console.log("getting next event");
-			const json = await WinchattyAPI._waitForNextEvent(this._lastEventId);
+			json = await WinchattyAPI._waitForNextEvent(this._lastEventId);
 			this._lastEventId = json.lastEventId;
+			debugStore.addLog(`Got ${json.events.length} events`);
 			_.each(json.events, async (event) => {
 				switch (event.eventType) {
 					case "newPost":
@@ -224,6 +226,8 @@ export class ChattyStore {
 						break;
 				}
 			});
+		} catch (e) {
+			debugStore.addError("Error processing events - Error:  " + JSON.stringify(e) + " Events: " + JSON.stringify(json));
 		} finally {
 			this._clearTimer();
 			this._refreshTimer = setTimeout(async () => {

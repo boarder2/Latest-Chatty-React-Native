@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 
 import loginStore from "../data/LoginStore";
+import debugStore from "../data/DebugStore";
 
 export default class TagAPI {
 	static tagHostUrl = "http://www.lmnopc.com/greasemonkey/shacklol";
@@ -39,7 +40,7 @@ export default class TagAPI {
 				}
 			}
 		} catch (e) {
-			console.error("Error tagging " + e);
+			debugStore.addError("Error tagging " + e);
 		}
 
 		return 0;

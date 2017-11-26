@@ -10,7 +10,8 @@ export default class DebugView extends React.Component {
 	static navigationOptions = () => ({
 		title: "Debug Log",
 		headerTintColor: GlobalStyles.navigationHeaderTintColor,
-		headerStyle: GlobalStyles.navigationHeaderStyle
+		headerStyle: GlobalStyles.navigationHeaderStyle,
+		drawerLockMode: "locked-closed"
 	});
 
 	constructor(props) {

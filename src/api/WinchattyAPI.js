@@ -16,7 +16,7 @@ export default class WinchattyAPI {
 			let data = new FormData();
 			const username = await loginStore.getUser();
 			if (_.isEmpty(username)) {
-				console.error("Not logged in, can't post a comment.");
+				debugStore.addError("Not logged in, can't post a comment.");
 				return;
 			}
 
@@ -34,10 +34,10 @@ export default class WinchattyAPI {
 			const result = await response.json();
 			if (result.result !== "success" && result.error) {
 				//TODO: Handle error
-				console.error("Error posting comment " + result.code + " : " + result.message);
+				debugStore.addError("Error posting comment " + result.code + " : " + result.message);
 			}
 		} catch (error) {
-			console.error(error);
+			debugStore.addError(error);
 		}
 	}
 

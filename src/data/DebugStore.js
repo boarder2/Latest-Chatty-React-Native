@@ -4,6 +4,10 @@ import moment from "moment";
 export class DebugStore {
 	@observable logEntries = observable([]);
 
+	addError(message) {
+		this.addLog("!!ERROR!!" + message);
+	}
+
 	@action addLog(entry) {
 		const newEntry = {id: this.logEntries.length, time: new Date(), message: entry};
 		console.log(moment(newEntry.time).format("hh:mm:ss.SSSS") + " : " + newEntry.message);
