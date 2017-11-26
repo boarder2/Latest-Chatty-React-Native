@@ -266,6 +266,7 @@ export class ChattyStore {
 
 	_clearTimer() {
 		if (!_.isUndefined(this._refreshTimer)) {
+			debugStore.addLog("Stopping chatty refresh timer.");
 			clearTimeout(this._refreshTimer);
 			this._refreshTimer = undefined;
 		}
