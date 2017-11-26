@@ -213,7 +213,7 @@ export class ChattyStore {
 			json = await WinchattyAPI._waitForNextEvent(this._lastEventId);
 			this._lastEventId = json.lastEventId;
 			debugStore.addLog(`Got ${json.events.length} events`);
-			_.each(json.events, async (event) => {
+			for (const event of json.events) {
 				switch (event.eventType) {
 					case "newPost":
 						await this._processNewPost(event.eventData.post);
@@ -225,7 +225,7 @@ export class ChattyStore {
 						// console.log("unhandled event type: " + JSON.stringify(json));
 						break;
 				}
-			});
+			}
 		} catch (e) {
 			debugStore.addError("Error processing events - Error:  " + JSON.stringify(e) + " Events: " + JSON.stringify(json));
 		} finally {
