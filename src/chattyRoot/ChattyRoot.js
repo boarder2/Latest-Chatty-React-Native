@@ -1,6 +1,5 @@
 import { observer } from "mobx-react/native";
-import { StyleSheet, FlatList, View, TouchableOpacity, AppState, StatusBar, Text } from "react-native";
-import { Font } from "expo";
+import { StyleSheet, FlatList, View, TouchableOpacity, StatusBar, Text } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from "react";
 
@@ -31,22 +30,6 @@ export default class ChattyRoot extends React.Component {
 		};
 	}
 
-	componentWillMount() {
-		Font.loadAsync({
-			"source-code-pro-light": require("../../assets/fonts/SourceCodePro-Light.ttf")
-		});
-		chattyStore.startChatyRefresh();
-	}
-
-	componentDidMount() {
-		AppState.addEventListener("change", this._handleAppStateChange);
-	}
-
-	componentWillUnmount() {
-		chattyStore.stopChattyRefresh();
-		AppState.removeEventListener("change", this._handleAppStateChange);
-	}
-
 	render() {
 		const newPostIndicator = this.state.store.newThreadCount > 0 ? (
 			<FadeInView style={{ backgroundColor: "#26F", alignItems: "center", padding: 6 }}
@@ -70,18 +53,6 @@ export default class ChattyRoot extends React.Component {
 			</View>
 		);
 	}
-
-	_handleAppStateChange = (nextState) => {
-		switch (nextState) {
-			case "active":
-				chattyStore.startChatyRefresh();
-				break;
-			case "background":
-			case "inactive":
-				chattyStore.stopChattyRefresh();
-				break;
-		}
-	};
 
 	_scrollToTop() {
 		this.listRef.scrollToIndex({ index: 0 });

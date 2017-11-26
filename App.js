@@ -1,8 +1,11 @@
 import { DrawerNavigator, StackNavigator } from "react-navigation";
+import { Font } from "expo";
 import React from "react";
+import { AppState } from "react-native";
 
 import BrowserView from "./src/BrowserView";
 import ChattyRoot from "./src/chattyRoot/ChattyRoot";
+import chattyStore from "./src/data/ChattyStore";
 import HelpView from "./src/HelpView";
 import LoginScreen from "./src/settings/LoginScreen";
 import NewRootPostView from "./src/postViews/NewRootPostView";
@@ -27,7 +30,7 @@ const Settings = StackNavigator({
 	Login: { screen: LoginScreen }
 });
 
-const App = DrawerNavigator(
+const AppNavigator = DrawerNavigator(
 	{
 		Chatty: { screen: Chatty },
 		Settings: { screen: Settings },
@@ -43,4 +46,38 @@ const App = DrawerNavigator(
 	}
 );
 
-export default App;
+export default class App extends React.Component {
+	componentWillMount() {
+		Font.loadAsync({
+			"source-code-pro-light": require("./assets/fonts/SourceCodePro-Light.ttf")
+		});
+		chattyStore.startChatyRefresh();
+	}
+
+	componentDidMount() {
+		AppState.addEventListener("change", this._handleAppStateChange);
+	}
+
+	componentWillUnmount() {
+		chattyStore.stopChattyRefresh();
+		AppState.removeEventListener("change", this._handleAppStateChange);
+	}
+
+	render() {
+		return <AppNavigator />;
+	}
+
+	_handleAppStateChange = (nextState) => {
+		switch (nextState) {
+			case "active":
+				console.log("App activated");
+				chattyStore.startChatyRefresh();
+				break;
+			case "background":
+			case "inactive":
+				console.log("App backgrounded or inactive");
+				chattyStore.stopChattyRefresh();
+				break;
+		}
+	};
+}

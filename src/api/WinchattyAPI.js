@@ -48,6 +48,7 @@ export default class WinchattyAPI {
 	}
 
 	static async _waitForNextEvent(currentEventId) {
+		console.log("Waiting for event last id is " + currentEventId);
 		const response = await fetch("https://winchatty.com/v2/waitForEvent?lastEventId=" + currentEventId);
 		const json = await response.json();
 		return json;
