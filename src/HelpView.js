@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Button } from "react-native";
 import React from "react";
 
 import GlobalStyles from "./styles/GlobalStyles";
@@ -52,6 +52,7 @@ export default class HelpView extends React.Component {
 				<Text style={[styles.blended, { fontSize: 8 }]}>
 					This application is not supported by, endorsed by, or affiliated with shacknews.com
 				</Text>
+				<Button style={{ padding: 6 }} title="Show Debug Log" onPress={() => this.props.navigation.navigate("DebugView")} />
 			</View>
 		</ScrollView >);
 	}

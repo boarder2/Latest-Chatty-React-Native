@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 
 import loginStore from "../data/LoginStore";
+import debugStore from "../data/DebugStore";
 
 export default class WinchattyAPI {
 	static tenYearUsers = [];
@@ -43,12 +44,12 @@ export default class WinchattyAPI {
 	static async _getNewestEventId() {
 		const response = await fetch("https://winchatty.com/v2/getNewestEventId");
 		const rJson = await response.json();
-		// console.log("Latest event Id is ", JSON.stringify(rJson));
+		debugStore.addLog("Latest event Id is ", JSON.stringify(rJson));
 		return rJson.eventId;
 	}
 
 	static async _waitForNextEvent(currentEventId) {
-		console.log("Waiting for event last id is " + currentEventId);
+		debugStore.addLog("Waiting for event last id is " + currentEventId);
 		const response = await fetch("https://winchatty.com/v2/waitForEvent?lastEventId=" + currentEventId);
 		const json = await response.json();
 		return json;
@@ -57,13 +58,13 @@ export default class WinchattyAPI {
 	static async _getTenYearUsers() {
 		if (WinchattyAPI.tenYearUsers.length === 0) {
 			try {
-				console.log("Getting users.");
+				debugStore.addLog("Getting users.");
 				const response = await fetch("https://winchatty.com/v2/getAllTenYearUsers");
 				const usersJson = await response.json();
 				WinchattyAPI.tenYearUsers = _.sortBy(usersJson.users, [(x) => {
 					return x.toLowerCase();
 				}]);
-				// console.log("Got " + WinchattyAPI.tenYearUsers.length + " users");
+				debugStore.addLog("Got " + WinchattyAPI.tenYearUsers.length + " users");
 			} catch (ignored) {
 				WinchattyAPI.tenYearUsers = [];
 			}

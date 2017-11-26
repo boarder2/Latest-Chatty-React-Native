@@ -12,6 +12,8 @@ import NewRootPostView from "./src/postViews/NewRootPostView";
 import SettingsScreen from "./src/settings/SettingsScreen";
 import StyleConverters from "./src/styles/StyleConverters";
 import ThreadList from "./src/threadView/ThreadList";
+import debugStore from "./src/data/DebugStore";
+import DebugView from "./src/DebugView";
 
 const Chatty = StackNavigator(
 	{
@@ -34,7 +36,13 @@ const AppNavigator = DrawerNavigator(
 	{
 		Chatty: { screen: Chatty },
 		Settings: { screen: Settings },
-		Help: { screen: StackNavigator({ Help: { screen: HelpView } }) }
+		Help: {
+			screen: StackNavigator(
+				{
+					Help: { screen: HelpView },
+					DebugView: { screen: DebugView }
+				})
+		}
 	},
 	{
 		initialRouteName: "Chatty",
@@ -70,12 +78,12 @@ export default class App extends React.Component {
 	_handleAppStateChange = (nextState) => {
 		switch (nextState) {
 			case "active":
-				console.log("App activated");
+				debugStore.addLog("App activated");
 				chattyStore.startChatyRefresh();
 				break;
 			case "background":
 			case "inactive":
-				console.log("App backgrounded or inactive");
+				debugStore.addLog("App backgrounded or inactive");
 				chattyStore.stopChattyRefresh();
 				break;
 		}

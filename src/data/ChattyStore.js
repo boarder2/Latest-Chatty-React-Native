@@ -5,6 +5,7 @@ import AuthorTypes from "./AuthorTypes";
 import loginStore from "../data/LoginStore";
 import seenPosts from "./SeenPosts";
 import WinchattyAPI from "../api/WinchattyAPI";
+import debugStore from "./DebugStore";
 
 export class ChattyStore {
 	@observable unfilteredChatty = observable.map();
@@ -20,11 +21,11 @@ export class ChattyStore {
 		if (this.refreshing) return;
 		this._clearTimer();
 		if (this.unfilteredChatty.size > 0) {
-			console.log("Have a chatty. Waiting for next event.");
+			debugStore.addLog("Have a chatty. Waiting for next event.");
 			this._waitForNextEvent();
 		} else {
 			this.refreshing = true;
-			console.log("Getting full chatty from startChattyRefresh");
+			debugStore.addLog("Getting full chatty from startChattyRefresh");
 			this.refreshTimer = setTimeout(() => {
 				this._getWholeChatty();
 			}, 1);
