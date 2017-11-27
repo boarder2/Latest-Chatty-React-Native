@@ -59,7 +59,7 @@ export default class ChattyRoot extends React.Component {
 	}
 
 	_renderThread = ({ item }) => {
-		return (<RenderedRootPost item={item}
+		return (<RenderedRootPost threadId={item.id}
 			onPressed={() => this.props.navigation.navigate("Thread", { threadId: item.id })} />);
 	};
 }

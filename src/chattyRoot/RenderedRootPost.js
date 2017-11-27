@@ -8,36 +8,38 @@ import * as _ from "lodash";
 
 import StyleConverters from "../styles/StyleConverters";
 import WinchattyAPI from "../api/WinchattyAPI";
+import chattyStore from "../data/ChattyStore";
 
 @observer
 export default class RenderedRootPost extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			item: this.props.item
+			store: chattyStore
 		};
 	}
 
 	render() {
-		let tagStyle = StyleConverters.getThreadTagStyle(this.state.item.author.toLowerCase() === "shacknews" ? "informative" : this.state.item.category);
+		const item = this.state.store.unfilteredChatty.get(this.props.threadId);
+		let tagStyle = StyleConverters.getThreadTagStyle(item.author.toLowerCase() === "shacknews" ? "informative" : item.category);
 		let participatedIcon;
 		let unreadRepliesIcon;
-		if (!this.state.item.participated) {
+		if (!item.participated) {
 			participatedIcon = <Icon name="account-outline" size={16} color="#333" />;
 		} else {
 			participatedIcon = <Icon name="account" size={16} color={StyleConverters.getAccentColor()} />;
 		}
-		if (!this.state.item.unreadReplies) {
+		if (!item.unreadReplies) {
 			unreadRepliesIcon = <Icon name="comment-outline" size={16} color="#333" />;
 		} else {
 			unreadRepliesIcon = <Icon name="comment" size={16} color={StyleConverters.getAccentColor()} />;
 		}
 		let tenYearIcon;
-		if (WinchattyAPI.isTenYearUser(this.state.item.author)) {
+		if (WinchattyAPI.isTenYearUser(item.author)) {
 			tenYearIcon = <Icon name="flash" style={{ marginLeft: 2, marginTop: 2 }} size={12} color="rgb(255, 186, 0);" />;
 		}
 		const tagIndicators = [];
-		_.each(this.state.item.lols, (tag) => {
+		_.each(item.lols, (tag) => {
 			const size = Math.min(15, Math.max(5, tag.count * 2));
 			tagIndicators.push(<View key={tag.tag} style={{ height: size, width: size, marginRight:2, backgroundColor: StyleConverters.getLolTagColor(tag.tag) }} />);
 		});
@@ -54,12 +56,12 @@ export default class RenderedRootPost extends React.Component {
 					justifyContent: "space-between"
 				}}>
 					<View style={{ flex: 1, flexDirection: "row" }}>
-						<Text style={StyleConverters.getAuthorTextStyle(this.state.item.authorType)}>{this.state.item.author}</Text>
+						<Text style={StyleConverters.getAuthorTextStyle(item.authorType)}>{item.author}</Text>
 						{tenYearIcon}
 					</View>
 					<View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end" }}>
-						{this.state.item.wasNewThread ? <Icon name="star" fontSize="14" color={StyleConverters.getAccentColor()} /> : undefined}
-						<Text style={styles.dateText}>{moment(this.state.item.date).fromNow()}</Text>
+						{item.wasNewThread ? <Icon name="star" fontSize="14" color={StyleConverters.getAccentColor()} /> : undefined}
+						<Text style={styles.dateText}>{moment(item.date).fromNow()}</Text>
 					</View>
 				</View>
 				<View style={{
@@ -73,16 +75,16 @@ export default class RenderedRootPost extends React.Component {
 						alignItems: "center",
 						justifyContent: "center"
 					}, tagStyle]}>
-						<Text style={styles.replyCountText} numberOfLines={1}>{this.state.item.postCount}</Text>
+						<Text style={styles.replyCountText} numberOfLines={1}>{item.postCount}</Text>
 					</View>
 					<View style={{
 						flex: 1,
 						paddingLeft: 6,
 						alignItems: "stretch"
 					}}>
-						<Text style={{ flex: 1, color: this.state.item.hasUnreadPosts ? "lightgray" : "gray" }} numberOfLines={3}>
-							{this.state.item.preview}
-							{/* <RichPostView text={this.state.item.preview}/> */}
+						<Text style={{ flex: 1, color: item.hasUnreadPosts ? "lightgray" : "gray" }} numberOfLines={3}>
+							{item.preview}
+							{/* <RichPostView text={item.preview}/> */}
 						</Text>
 						<View style={{ flex: 0, flexDirection: "row", alignItems:"flex-end" }}>
 							{tagIndicators}
@@ -100,7 +102,7 @@ export default class RenderedRootPost extends React.Component {
 }
 
 RenderedRootPost.propTypes = {
-	item: PropTypes.object.isRequired,
+	threadId: PropTypes.number.isRequired,
 	onPressed: PropTypes.func
 };
 

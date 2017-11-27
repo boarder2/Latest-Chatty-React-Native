@@ -26,9 +26,7 @@ export class ChattyStore {
 		} else {
 			this.refreshing = true;
 			debugStore.addLog("Getting full chatty from startChattyRefresh");
-			this.refreshTimer = setTimeout(() => {
-				this._getWholeChatty();
-			}, 1);
+			this._getWholeChatty(true);
 		}
 	}
 
@@ -39,13 +37,6 @@ export class ChattyStore {
 	@action addRootPost(post) {
 		// console.log("Adding post id " + post.id + " to data store.");
 		this.unfilteredChatty.set(post.id.toString(), post);
-	}
-
-	@action addRootPosts(posts) {
-		// console.log("Adding " + posts.length + " posts to root store.");
-		_.each(posts, p => {
-			this.unfilteredChatty.set(p.id.toString(), p);
-		});
 	}
 
 	@action async updatePostsForThread(threadId, posts) {
@@ -61,10 +52,6 @@ export class ChattyStore {
 			post.isSelected = post.id === selectedId;
 		});
 		thread.posts = posts;
-	}
-
-	@action clearRootPosts() {
-		this.unfilteredChatty.clear();
 	}
 
 	@action async selectPost(threadId, postId) {
@@ -153,7 +140,7 @@ export class ChattyStore {
 		this.filteredChatty.clear();
 		this.newThreadCount = 0;
 		const sortedChatty = this._getSortedChatty();
-		_.each(sortedChatty, (p) => {
+		for (const p of sortedChatty) {
 			if (p.isNewThread) {
 				p.wasNewThread = true;
 			} else {
@@ -161,20 +148,19 @@ export class ChattyStore {
 			}
 			p.isNewThread = false;
 			this.filteredChatty.set(p.id.toString(), p);
-		});
+		}
 	}
 
 	@action setSortOrder(value) {
 		this.sortOrder = value;
 	}
 
-	@action async _getWholeChatty() {
+	@action async _getWholeChatty(startRefreshTimer) {
 		try {
 			//performance.now doesn't exist in RN so I guess this is the best I can do for now.  
 			// No luck looking for something different in after 2 minutes and it's not worth spending more time.
 			// let start = new Date();
 			this.refreshing = true;
-			this.clearRootPosts();
 			await WinchattyAPI._getTenYearUsers();
 			await seenPosts.refreshSeenPosts();
 			this._lastEventId = await WinchattyAPI._getNewestEventId();
@@ -185,22 +171,25 @@ export class ChattyStore {
 			// end = new Date();
 			// console.log("Getting chatty took " + (end.getTime() - start.getTime()).toString() + " ms");
 			// start = new Date();
-			const rootPosts = [];
+			const rootPosts = new Map();
 			const username = await loginStore.getUser();
 			for (const thread of chattyJson.threads) {
 				const newThread = await this._createRootThread(thread.posts, username, false);
-				rootPosts.push(newThread);
+				rootPosts.set(newThread.id.toString(), newThread);
 			}
 			// end = new Date();
 			// console.log("Parsing chatty took " + (end.getTime() - start.getTime()).toString() + " ms");
 
-			this.addRootPosts(rootPosts);
+			this.unfilteredChatty.replace(rootPosts);
 			this.refreshChatty();
 			this.refreshing = false;
 
-			this.refreshTimer = setTimeout(async () => {
-				await this._waitForNextEvent();
-			}, 10000);
+			this._clearTimer();
+			if (startRefreshTimer) {
+				this.refreshTimer = setTimeout(async () => {
+					await this._waitForNextEvent();
+				}, 10000);
+			}
 		} catch (error) {
 			debugStore.addError(error);
 		}
@@ -211,6 +200,14 @@ export class ChattyStore {
 		try {
 			// console.log("getting next event");
 			json = await WinchattyAPI._waitForNextEvent(this._lastEventId);
+			if (json.error) {
+				if (json.code === "ERR_TOO_MANY_EVENTS") {
+					debugStore.addLog("Too many events since last refresh. Starting over.");
+					await this._getWholeChatty(false);
+					return;
+				}
+			}
+
 			this._lastEventId = json.lastEventId;
 			debugStore.addLog(`Got ${json.events.length} events`);
 			for (const event of json.events) {
@@ -237,7 +234,7 @@ export class ChattyStore {
 	}
 
 	_getSortedChatty() {
-		// console.log("Sorting by " + this.sortOrder);
+		debugStore.addLog("Sorting by " + this.sortOrder);
 		switch (this.sortOrder) {
 			case "hasReplies":
 				return this.unfilteredChatty.values().sort((a, b) => {
