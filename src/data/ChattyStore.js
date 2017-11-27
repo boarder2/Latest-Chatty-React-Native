@@ -279,15 +279,17 @@ export class ChattyStore {
 		const username = await loginStore.getUser();
 		if (post.parentId === 0) {
 			const newThread = this._createRootThread([post], username, true);
-			this.addRootPost(newThread);
-			this.newThreadCount++;
+			if (!this.unfilteredChatty.has(newThread.id.toString())) {
+				this.addRootPost(newThread);
+				this.newThreadCount++;
+			}
 		} else {
 			const thread = this.unfilteredChatty.get(post.threadId.toString());
 			if (_.isUndefined(thread)) {
 				// console.log("Can't find thread for the post");
 				return;
 			}
-			const newPosts = _.union(thread.posts, [post]);
+			const newPosts = _.unionBy(thread.posts, [post], (p) => p.id);
 			const sortedPosts = this._parseThread(newPosts, username, false);
 			await this.updatePostsForThread(post.threadId, sortedPosts);
 		}
