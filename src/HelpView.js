@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Button } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Button, StatusBar } from "react-native";
 import React from "react";
 
 import GlobalStyles from "./styles/GlobalStyles";
@@ -19,12 +19,17 @@ export default class HelpView extends React.Component {
 			<View style={{
 				padding: 6
 			}}>
+				<StatusBar barStyle="light-content" />
 				<Text style={styles.header}>About</Text>
 				<Text style={styles.blended}>
 					Created by boarder2 {"\n"}
 					Special thanks to electroly for the API
 				</Text>
 				<Text style={styles.header}>Change History</Text>
+				<Text style={styles.subHeader}>12/2/2017</Text>
+				<Text style={styles.text}>
+					• Optimized handling of new posts a bit
+				</Text>
 				<Text style={styles.subHeader}>11/26/2017</Text>
 				<Text style={styles.text}>
 					• Better support for resuming from being backgrounded

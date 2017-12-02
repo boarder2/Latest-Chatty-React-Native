@@ -26,7 +26,7 @@ export default class DebugView extends React.Component {
 			<View style={{ flex: 1, backgroundColor: "#222" }}>
 				<FlatList data={this.state.logStore.logEntries}
 					keyExtractor={(item) => item.id}
-					renderItem={({ item }) => <Text style={{ color: "#FFF" }} key={item.time}>{moment(item.time).format("hh:mm:ss.SSSS") + " : " + item.message}</Text>} />
+					renderItem={({ item }) => <Text style={{ color: "#FFF", fontFamily:"source-code-pro-light" }} key={item.time}>{moment(item.time).format("hh:mm:ss.SSSS") + " : " + item.message}</Text>} />
 			</View>
 		);
 	}

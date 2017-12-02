@@ -9,8 +9,12 @@ export class DebugStore {
 	}
 
 	@action addLog(entry) {
-		const newEntry = {id: this.logEntries.length, time: new Date(), message: entry};
-		console.log(moment(newEntry.time).format("hh:mm:ss.SSSS") + " : " + newEntry.message);
+		const newEntry = { id: this.logEntries.length, time: new Date(), message: entry };
+		//eslint-disable-next-line no-undef
+		if (__DEV__) {
+			//eslint-disable-next-line no-console
+			console.log(moment(newEntry.time).format("hh:mm:ss.SSSS") + " : " + newEntry.message);
+		}
 		this.logEntries.unshift(newEntry);
 	}
 

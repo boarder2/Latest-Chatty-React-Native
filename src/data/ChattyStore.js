@@ -1,4 +1,5 @@
-import { action, observable } from "mobx";
+import { action, observable, runInAction } from "mobx";
+import * as mobx from "mobx";
 import * as _ from "lodash";
 
 import AuthorTypes from "./AuthorTypes";
@@ -41,37 +42,37 @@ export class ChattyStore {
 
 	@action async updatePostsForThread(threadId, posts) {
 		var username = await loginStore.getUser();
-		if (!_.isEmpty(username)) { username = username.toLowerCase(); }
-		const thread = this.unfilteredChatty.get(threadId.toString());
+		const thread = mobx.toJS(this.unfilteredChatty.get(threadId.toString()));
 		const selectedId = _.find(thread.posts, (post) => post.isSelected).id;
-		thread.postCount = posts.length;
-		thread.hasUnreadPosts = _.some(posts, p => !seenPosts.isPostRead(p.id));
-		thread.participated = !_.isEmpty(username) && _.some(posts, p => p.author.toLowerCase() === username);
-		thread.unreadReplies = !_.isEmpty(username) && this._threadContainsUnreadReplies(username, posts);
-		_.each(posts, (post) => {
-			post.isSelected = post.id === selectedId;
+		runInAction(() => {
+			thread.postCount = posts.length;
+			thread.hasUnreadPosts = _.some(posts, p => !seenPosts.isPostRead(p.id));
+			thread.participated = !_.isEmpty(username) && _.some(posts, p => p.author.toLowerCase() === username);
+			thread.unreadReplies = !_.isEmpty(username) && this._threadContainsUnreadReplies(username, posts);
+			for (const post of posts) {
+				post.isSelected = post.id === selectedId;
+			}
+			thread.posts = posts;
+			this.unfilteredChatty.set(threadId.toString(), thread);
 		});
-		thread.posts = posts;
 	}
 
 	@action async selectPost(threadId, postId) {
 		const thread = this.unfilteredChatty.get(threadId.toString());
-		_.each(thread.posts, (post) => {
+		for (const post of thread.posts) {
 			post.isSelected = post.id === postId;
 			if (post.isSelected) {
 				seenPosts.markPostRead(post.id);
 				post.isRead = true;
 			}
-		});
+		}
 		thread.hasUnreadPosts = _.some(thread.posts, p => !seenPosts.isPostRead(p.id));
 
 		var username = await loginStore.getUser();
-		if (!_.isEmpty(username)) {
-			username = username.toLowerCase();
-		} else {
-			return;
-		}
-		thread.unreadReplies = this._threadContainsUnreadReplies(username, thread.posts);
+		if (_.isEmpty(username)) { return; }
+		runInAction(() => {
+			thread.unreadReplies = this._threadContainsUnreadReplies(username, thread.posts);
+		});
 	}
 
 	@action async selectPostInDirection(threadId, forward) {
@@ -89,10 +90,10 @@ export class ChattyStore {
 
 	@action markThreadRead(threadId) {
 		const thread = this.unfilteredChatty.get(threadId.toString());
-		_.each(thread.posts, p => {
+		for (const p of thread.posts) {
 			seenPosts.markPostRead(p.id);
 			p.isRead = true;
-		});
+		}
 		thread.hasUnreadPosts = false;
 		thread.unreadReplies = false;
 	}
@@ -123,6 +124,7 @@ export class ChattyStore {
 		});
 
 		if (_.isUndefined(post)) { return; }
+		debugStore.addLog(`Updating ${tag}s for postId ${postId} to ${count}`);
 
 		let foundTag = _.find(post.lols, t => t.tag === tag);
 		if (_.isUndefined(foundTag)) {
@@ -198,6 +200,7 @@ export class ChattyStore {
 	@action async _waitForNextEvent() {
 		let json;
 		try {
+			this._clearTimer();
 			// console.log("getting next event");
 			json = await WinchattyAPI._waitForNextEvent(this._lastEventId);
 			if (json.error) {
@@ -210,6 +213,7 @@ export class ChattyStore {
 
 			this._lastEventId = json.lastEventId;
 			debugStore.addLog(`Got ${json.events.length} events`);
+			const startDate = new Date();
 			for (const event of json.events) {
 				switch (event.eventType) {
 					case "newPost":
@@ -223,10 +227,10 @@ export class ChattyStore {
 						break;
 				}
 			}
+			debugStore.addLog(`Took ${(new Date()).getTime() - startDate.getTime()}ms to process all events.`);
 		} catch (e) {
 			debugStore.addError("Error processing events - Error:  " + JSON.stringify(e) + " Events: " + JSON.stringify(json));
 		} finally {
-			this._clearTimer();
 			this._refreshTimer = setTimeout(async () => {
 				await this._waitForNextEvent();
 			}, 10000);
@@ -270,33 +274,39 @@ export class ChattyStore {
 	}
 
 	_processTagCountUpdate(updates) {
-		_.each(updates, (update) => {
+		for (const update of updates) {
 			this.updateTagCount(update.postId, update.tag, update.count);
-		});
+		}
 	}
 
-	async _processNewPost(post) {
+	@action async _processNewPost(post) {
 		const username = await loginStore.getUser();
 		if (post.parentId === 0) {
-			const newThread = this._createRootThread([post], username, true);
-			if (!this.unfilteredChatty.has(newThread.id.toString())) {
-				this.addRootPost(newThread);
-				this.newThreadCount++;
+			if (!this.unfilteredChatty.has(post.id.toString())) {
+				debugStore.addLog(`Adding new root post with threadId ${post.threadId}`);
+				const newThread = this._createRootThread([post], username, true);
+				runInAction(() => {
+					this.addRootPost(newThread);
+					this.newThreadCount++;
+				});
 			}
 		} else {
-			const thread = this.unfilteredChatty.get(post.threadId.toString());
+			const thread = mobx.toJS(this.unfilteredChatty.get(post.threadId.toString()));
 			if (_.isUndefined(thread)) {
 				// console.log("Can't find thread for the post");
 				return;
 			}
-			const newPosts = _.unionBy(thread.posts, [post], (p) => p.id);
-			const sortedPosts = this._parseThread(newPosts, username, false);
-			await this.updatePostsForThread(post.threadId, sortedPosts);
+			debugStore.addLog(`Adding post to threadId ${post.threadId} which has ${thread.postCount} replies`);
+			// const newPosts = _.unionBy(thread.posts, [post], (p) => p.id);
+			// const sortedPosts = this._parseThread(newPosts, username, false);
+			this._prepPostForDisplay(post, false, username, _.first(thread.posts));
+			this._addReply(post, thread.posts, thread.posts);
+			this._calculateDepthIndicators(thread.posts);
+			await this.updatePostsForThread(post.threadId, thread.posts);
 		}
 	}
 
 	_createRootThread(threadPosts, username, isNewThread) {
-		if (!_.isEmpty(username)) { username = username.toLowerCase(); } else { username = ""; }
 		const parsedThreadPosts = this._parseThread(threadPosts, username, true);
 		seenPosts.markPostRead(parsedThreadPosts[0].id); //Root post will never be unread.
 		parsedThreadPosts[0].isRead = true;
@@ -312,34 +322,35 @@ export class ChattyStore {
 	}
 	//Prettu much copied this from LC UWP. There is a lot of looping in here that I"m sure could be optimized.
 	_parseThread(threadPosts, username, setRootSelected) {
-		if (!_.isEmpty(username)) { username = username.toLowerCase(); } else { username = ""; }
 		threadPosts = _.orderBy(threadPosts, ["id"], ["asc"]);
 		const rootPost = _.find(threadPosts, (p) => {
 			return p.parentId === 0;
 		});
-		const threadOP = rootPost.author;
 		rootPost.depth = 0;
-		this._recursiveSetDepth(rootPost, threadPosts, 1);
 		const sortedPosts = [];
 		this._recursiveAddComments(rootPost, sortedPosts, threadPosts);
 		const posts = _.chain(sortedPosts)
-			.reverse()
+			//.reverse()
 			.each((p) => {
-				this._generatePreview(p);
-				if (setRootSelected) {
-					p.isSelected = p.parentId === 0;
-				}
-				if (!_.isEmpty(username) && p.author.toLowerCase() === username.toLowerCase()) {
-					seenPosts.markPostRead(p.id);
-				}
-				p.isRead = seenPosts.isPostRead(p.id);
-				p.body = p.body.replace(/\r?<br \/>/g, "\n");
-				p.authorType = this._getAuthorType(p.author, username, p.id === rootPost.id ? "" : threadOP);
+				this._prepPostForDisplay(p, setRootSelected, username, rootPost);
 			})
 			.value();
 
 		this._calculateDepthIndicators(posts);
 		return posts;
+	}
+
+	@action _prepPostForDisplay(post, setRootSelected, username, rootPost) {
+		this._generatePreview(post);
+		if (setRootSelected) {
+			post.isSelected = post.parentId === 0;
+		}
+		if (!_.isEmpty(username) && post.author.toLowerCase() === username) {
+			seenPosts.markPostRead(post.id);
+		}
+		post.isRead = seenPosts.isPostRead(post.id);
+		post.body = post.body.replace(/\r?<br \/>/g, "\n");
+		post.authorType = this._getAuthorType(post.author, username, post.id === rootPost.id ? "" : rootPost.author);
 	}
 
 	_getAuthorType(username, currentUser, opAuthor) {
@@ -357,7 +368,10 @@ export class ChattyStore {
 		}
 	}
 
-	_calculateDepthIndicators(posts) {
+	@action _calculateDepthIndicators(posts) {
+		const firstThreadPost = _.first(posts);
+		let start = new Date();
+		this._recursiveSetDepth(firstThreadPost, posts, 1);
 		var orderedById = _.sortBy(posts, ["id"]);
 		for (const c of orderedById) {
 			var indicators = [c.depth];
@@ -382,6 +396,7 @@ export class ChattyStore {
 				c.depthText = "";
 			}
 		}
+		debugStore.addLog(`Setting depth indicators for threadId ${firstThreadPost.id} which has ${posts.length} replies took ${(new Date()).getTime() - start.getTime()}ms`);
 	}
 
 	_findParentAtDepth(posts, c, depth) {
@@ -393,25 +408,26 @@ export class ChattyStore {
 	}
 
 	_isLastCommentAtDepth(posts, c) {
-		var threadsAtDepth = _.orderBy(_.filter(posts, c1 => c1.parentId == c.parentId), ["id"]);
+		//Relies on posts coming in already sorted by id.
+		var threadsAtDepth = _.filter(posts, c1 => c1.parentId === c.parentId);
 		return _.last(threadsAtDepth).id === c.id;
 	}
 
-	_generatePreview(post) {
+	@action _generatePreview(post) {
 		post.preview = post.body.replace(/\n/mg, " ").replace(/<(?:.|\n)*?>/gm, "").trim().substr(0, 300);
 	}
 
-	_recursiveAddComments(post, sortedPosts, threadPosts) {
+	@action _recursiveAddComments(post, sortedPosts, threadPosts) {
 		const childPosts = _.filter(threadPosts, (p) => {
 			return p.parentId === post.id;
 		});
 		this._addReply(post, sortedPosts, threadPosts);
-		_.each(childPosts, (child) => {
+		for (const child of childPosts) {
 			this._recursiveAddComments(child, sortedPosts, threadPosts);
-		});
+		}
 	}
 
-	_addReply(post, sortedPosts, threadPosts) {
+	@action _addReply(post, sortedPosts, threadPosts) {
 		let insertIndex = undefined;
 		const repliesToParent = _.filter(sortedPosts, (p) => {
 			return p.parentId === post.parentId;
@@ -428,7 +444,7 @@ export class ChattyStore {
 		}
 
 		if (insertIndex !== undefined) {
-			sortedPosts.splice(insertIndex, 0, post);
+			sortedPosts.splice(insertIndex + 1, 0, post);
 		}
 	}
 
@@ -443,14 +459,14 @@ export class ChattyStore {
 		}
 	}
 
-	_recursiveSetDepth(parent, thread, currentDepth) {
+	@action _recursiveSetDepth(parent, thread, currentDepth) {
 		const children = _.filter(thread, (post) => {
 			return post.parentId === parent.id;
 		});
-		_.each(children, (child) => {
+		for (const child of children) {
 			child.depth = currentDepth;
 			this._recursiveSetDepth(child, thread, currentDepth + 1);
-		});
+		}
 	}
 
 	_sortSingle(a, b) {

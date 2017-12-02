@@ -1,8 +1,11 @@
 import Expo from "expo";
+import * as _ from "lodash";
 
 class LoginStore {
 	async getUser() {
-		return await Expo.SecureStore.getItemAsync("username");
+		let username = await Expo.SecureStore.getItemAsync("username");
+		if (!_.isEmpty(username)) { username = username.toLowerCase(); } else { username = ""; }
+		return username;
 	}
 
 	async getPassword() {
