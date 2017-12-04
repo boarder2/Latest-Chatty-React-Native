@@ -28,6 +28,7 @@ export default class ThreadList extends React.Component {
 	}
 
 	render() {
+		const posts = this.state.store.unfilteredChatty.get(this.props.navigation.state.params.threadId).posts;
 		//TODO: Scrol to selected.
 		return (
 			<View style={styles.container}>
@@ -60,7 +61,7 @@ export default class ThreadList extends React.Component {
 				</Modal>
 				<KeyboardAwareFlatList
 					style={{ flex: 1 }}
-					data={this.state.store.unfilteredChatty.get(this.props.navigation.state.params.threadId).posts}
+					data={posts}
 					renderItem={(item) => this._renderPost(item.item)}
 					keyExtractor={(item) => item.id}
 					ref={(ref) => this.postList = ref}

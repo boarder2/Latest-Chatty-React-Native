@@ -1,4 +1,4 @@
-import { action, observable, runInAction } from "mobx";
+import { action, observable, observe, runInAction, isObservable } from "mobx";
 import * as mobx from "mobx";
 import * as _ from "lodash";
 
@@ -40,28 +40,15 @@ export class ChattyStore {
 		this.unfilteredChatty.set(post.id.toString(), post);
 	}
 
-	@action async updatePostsForThread(threadId, posts) {
-		var username = await loginStore.getUser();
-		const thread = mobx.toJS(this.unfilteredChatty.get(threadId.toString()));
-		const selectedId = _.find(thread.posts, (post) => post.isSelected).id;
-		runInAction(() => {
-			thread.postCount = posts.length;
-			thread.hasUnreadPosts = _.some(posts, p => !seenPosts.isPostRead(p.id));
-			thread.participated = !_.isEmpty(username) && _.some(posts, p => p.author.toLowerCase() === username);
-			thread.unreadReplies = !_.isEmpty(username) && this._threadContainsUnreadReplies(username, posts);
-			for (const post of posts) {
-				post.isSelected = post.id === selectedId;
-			}
-			thread.posts = posts;
-			this.unfilteredChatty.set(threadId.toString(), thread);
-		});
-	}
-
 	@action async selectPost(threadId, postId) {
 		const thread = this.unfilteredChatty.get(threadId.toString());
 		for (const post of thread.posts) {
-			post.isSelected = post.id === postId;
+			if (!isObservable(post)) {
+				debugStore.addLog(`Post ${post.id} is not observable`);
+			}
+			post.isSelected = (post.id === postId);
 			if (post.isSelected) {
+				debugStore.addLog(`Selecting post id ${post.id}`);
 				seenPosts.markPostRead(post.id);
 				post.isRead = true;
 			}
@@ -291,18 +278,43 @@ export class ChattyStore {
 				});
 			}
 		} else {
-			const thread = mobx.toJS(this.unfilteredChatty.get(post.threadId.toString()));
-			if (_.isUndefined(thread)) {
+			const mobxThread = this.unfilteredChatty.get(post.threadId.toString());
+			if (_.isUndefined(mobxThread)) {
 				// console.log("Can't find thread for the post");
 				return;
 			}
-			debugStore.addLog(`Adding post to threadId ${post.threadId} which has ${thread.postCount} replies`);
+			debugStore.addLog(`Adding post to threadId ${post.threadId} which has ${mobxThread.postCount} replies`);
 			// const newPosts = _.unionBy(thread.posts, [post], (p) => p.id);
 			// const sortedPosts = this._parseThread(newPosts, username, false);
-			this._prepPostForDisplay(post, false, username, _.first(thread.posts));
-			this._addReply(post, thread.posts, thread.posts);
-			this._calculateDepthIndicators(thread.posts);
-			await this.updatePostsForThread(post.threadId, thread.posts);
+			this._prepPostForDisplay(post, false, username, _.first(mobxThread.posts));
+			const observablePost = observable(post);
+			observe(observablePost, undefined, (newValue, oldValue) => debugStore.addLog(`New ${JSON.stringify(newValue)} Old ${JSON.stringify(oldValue)}`));
+			this._addReply(observablePost, mobxThread.posts, mobxThread.posts);
+			const jsPosts = mobx.toJS(mobxThread.posts);
+			this._calculateDepthIndicators(jsPosts);
+			runInAction(() => {
+				const start = new Date();
+				for (let i = 0; i < jsPosts.length; i++) {
+					if (jsPosts[i].depthText !== mobxThread.posts[i].depthText) {
+						mobxThread.posts[i].depthText = jsPosts[i].depthText;
+						mobxThread.posts[i].depth = jsPosts[i].depth;
+					}
+				}
+
+				//const selectedId = _.find(mobxThread.posts, (post) => post.isSelected).id;
+
+				mobxThread.postCount = mobxThread.posts.length;
+				mobxThread.hasUnreadPosts = _.some(jsPosts, p => !seenPosts.isPostRead(p.id));
+				if (!mobxThread.participated) { //If you've participated we don't need to check again (A post of yours could get nuked but whatever)
+					mobxThread.participated = !_.isEmpty(username) && _.some(jsPosts, p => p.author.toLowerCase() === username);
+				}
+				mobxThread.unreadReplies = !_.isEmpty(username) && this._threadContainsUnreadReplies(username, jsPosts);
+
+				// for (const post of mobxThread.posts) {
+				// 	post.isSelected = post.id === selectedId;
+				// }
+				debugStore.addLog(`Updating thread took ${(new Date()).getTime() - start.getTime()}ms`);
+			});
 		}
 	}
 
