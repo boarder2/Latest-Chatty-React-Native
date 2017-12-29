@@ -1,5 +1,5 @@
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
-import { observer } from "mobx-react/native";
+import { observer, Observer } from "mobx-react/native";
 import { StyleSheet, View, TouchableOpacity, Modal, Button } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from "react";
@@ -109,11 +109,13 @@ export default class ThreadList extends React.Component {
 	} 
 
 	_renderPost(item) {
-		return <RenderedPost item={item}
-			selectPost={this._selectPostId}
-			onTagButtonPressed={this._tagButtonPressed}
-			onReplyContentSizeChanged={this._replyContentSizeChanged}
-			navigation={this.props.navigation} />;
+		return <Observer>{
+			() => <RenderedPost item={item}
+				selectPost={this._selectPostId}
+				onTagButtonPressed={this._tagButtonPressed}
+				onReplyContentSizeChanged={this._replyContentSizeChanged}
+				navigation={this.props.navigation} />
+		}</Observer>;
 	}
 }
 

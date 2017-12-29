@@ -45,6 +45,11 @@ const AppNavigator = DrawerNavigator(
 		}
 	},
 	{
+		// They broke defaults.
+		// https://github.com/react-navigation/react-navigation/issues/3149#issuecomment-352862563
+		drawerOpenRoute: "DrawerOpen",
+		drawerCloseRoute: "DrawerClose",
+		drawerToggleRoute: "DrawerToggle",
 		initialRouteName: "Chatty",
 		drawerBackgroundColor: "black",
 		contentOptions: {
